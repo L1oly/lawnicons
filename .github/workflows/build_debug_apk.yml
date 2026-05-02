@@ -23,7 +23,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
-          git remote add upstream https://github.com/LawnchairLauncher/lawnicons -b develop
+          git remote add upstream https://github.com/LawnchairLauncher/lawnicons.git
           git fetch upstream personal
           git merge upstream/personal --no-edit
           git push origin personal
