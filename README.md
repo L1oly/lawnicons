@@ -45,9 +45,9 @@ Lawnicons on the Play Store will install as a different app from other sources.
 ## Supporting
 
 > [!IMPORTANT]
-> Sustain Lawnicons by backing the Lawnchair team.
+> Sustain Lawnicons by backing the Lawnchair team. Your support helps us maintain Lawnicons, add new icons, and review PRs. Supporter icon requests have higher priority.
 
-[Support Lawnchair team](https://opencollective.com/lawnchair)
+[Support on Open Collective](https://opencollective.com/lawnchair) • [Sponsor on GitHub](https://github.com/sponsors/LawnchairLauncher) • [Submit supporter request](https://github.com/LawnchairLauncher/lawnicons/issues/new?template=submit_supporter_request.yml)
 
 ## Contributing
 <div align="left">
@@ -55,15 +55,9 @@ Lawnicons on the Play Store will install as a different app from other sources.
         <img alt="Lawnicons guidelines" src="https://img.shields.io/badge/Lawnicons%20guidelines-3F9E00?logo=gitbook&logoColor=ffffff"></a>
     <a href="https://lawnicons-requests.vercel.app/">
         <img alt="Requested icons" src="https://img.shields.io/badge/Requested%20icons-94009E?logo=vercel&logoColor=ffffff"></a>
-    <a href="https://lawnchair.crowdin.com/lawnicons">
-        <img alt="Lawnicons localization on Crowdin" src="https://img.shields.io/badge/Localization-3F9E00?logo=crowdin&logoColor=ffffff"></a>        
+    <a href="https://github.com/LawnchairLauncher/lawnicons/issues/3546">
+        <img alt="Lawnicons localization issue" src="https://img.shields.io/badge/Localization-3F9E00?logo=crowdin&logoColor=ffffff"></a>        
 </div> 
-
-### Localization
-
-Contribute to Lawnicons localization and earn a priority icon request.
-  
-[Lawnicons localization issue](https://github.com/LawnchairLauncher/lawnicons/issues/3546)
 
 ### Development
 You're welcome to work on our issues. Contributors can get a priority icon request—write to us before you help.
@@ -73,10 +67,10 @@ You're welcome to work on our issues. Contributors can get a priority icon reque
 ### Icons
 It's required to follow the Lawnicons design guidelines. Accepted contributions include: new icons capped at 5 per pull request, missing app IDs, rebranding reports, and updates for outdated icons. 
 
-[Lawnicons design guidelines](https://github.com/LawnchairLauncher/lawnicons/blob/develop/CONTRIBUTING.md#contributing-icons-tldr) • [Report outdated icons](https://github.com/LawnchairLauncher/lawnicons/issues/new?template=icon_redesign.yml)
+[Lawnicons design guidelines](https://github.com/LawnchairLauncher/lawnicons/blob/develop/CONTRIBUTING.md#contributing-icons-tldr) • [Report outdated and low-quality icons](https://github.com/LawnchairLauncher/lawnicons/issues/new?template=report_outdated_and_low_quality_icons.yml)
 
 ### Icon requests
 
 `Open Lawnicons → Tap "Request icons" → Select and request icons`
 
-Icon requests become available on the Lawnicons release day and stay open for a short while. That said, anyone can become a contributor and add icons. It takes some learning, but it's doable.
+Icon requests become available on the Lawnicons release day and stay open for a short while.
