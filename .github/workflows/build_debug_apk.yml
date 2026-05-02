@@ -5,9 +5,28 @@ on:
   push:
     branches:
       - personal
+  schedule:
+    - cron: '0 0 * * 0'
   pull_request:
-
 jobs:
+  sync-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: personal
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sync with Upstream
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          git remote add upstream https://github.com
+          git fetch upstream develop
+          git merge upstream/develop --no-edit
+          git push origin develop
   check-paths:
     runs-on: ubuntu-latest
     outputs:
