@@ -31,7 +31,7 @@ jobs:
           git merge upstream/develop --no-edit
           git push origin personal
   version-bump:
-    needs: sync-and-update
+    needs:  nightly-release
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -85,7 +85,7 @@ jobs:
               
   build-debug-apk:
     runs-on: ubuntu-latest
-    needs: version-bump
+    needs: sync-and-update
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
