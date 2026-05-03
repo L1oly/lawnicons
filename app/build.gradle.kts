@@ -161,18 +161,30 @@ dependencies {
 tasks.preBuild {
     dependsOn(project(projects.svgProcessor.path).tasks.named("run"))
 }
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     signingConfigs {
         release {
-            storeFile file("my-release-key.jks")
-            storePassword "пароль"
-            keyAlias "alias_name"
-            keyPassword "пароль_ключа"
+            if (keystoreProperties.containsKey('storeFile')) {
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+            }
         }
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release // Це прив'язує підпис до релізу
+        }
+        debug {
+            signingConfig signingConfigs.release 
         }
     }
 }
+
