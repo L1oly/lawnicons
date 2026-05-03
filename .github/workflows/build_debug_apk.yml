@@ -130,7 +130,7 @@ jobs:
         run: echo "APK_NAME=Lawnicons.Nightly.$(echo ${{ github.sha }} | cut -c1-7).apk" >> $GITHUB_ENV
       - name: Rename .apk file
         run: |
-          mv artifacts/debug-apk/*.apk $APK_NAME
+          mv artifacts/release-apk/*.apk $APK_NAME
       - name: Delete release if exist then create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
