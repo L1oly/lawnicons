@@ -161,3 +161,18 @@ dependencies {
 tasks.preBuild {
     dependsOn(project(projects.svgProcessor.path).tasks.named("run"))
 }
+android {
+    signingConfigs {
+        release {
+            storeFile file("my-release-key.jks")
+            storePassword "пароль"
+            keyAlias "alias_name"
+            keyPassword "пароль_ключа"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
