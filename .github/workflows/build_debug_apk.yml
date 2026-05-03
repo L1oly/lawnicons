@@ -112,8 +112,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Debug APK
-          path: app/build/outputs/apk/app/debug/*.apk
+          name: Release APK
+          path: app/build/outputs/apk/app/release/*.apk
   nightly-release:
     runs-on: ubuntu-latest
     #if: github.event_name == 'push' && needs.check-paths.outputs.skip_steps != 'true'
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v8
         with:
-          name: Debug APK
+          name: Release APK
           path: artifacts/release-apk
       - name: Export APK_NAME for later use
         run: echo "APK_NAME=Lawnicons.Nightly.$(echo ${{ github.sha }} | cut -c1-7).apk" >> $GITHUB_ENV
