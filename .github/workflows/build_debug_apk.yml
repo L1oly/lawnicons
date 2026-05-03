@@ -10,6 +10,7 @@ on:
   pull_request:
 jobs:
   sync-and-update:
+    needs: check-paths
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,6 +31,7 @@ jobs:
           git merge upstream/develop --no-edit
           git push origin personal
   version-bump:
+    needs: sync-and-update
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -83,8 +85,7 @@ jobs:
               
   build-debug-apk:
     runs-on: ubuntu-latest
-    needs: check-paths
-    if: needs.check-paths.outputs.skip_steps != 'true'
+    needs: version-bump
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
