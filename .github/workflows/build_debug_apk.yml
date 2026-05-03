@@ -26,6 +26,7 @@ jobs:
           git remote add upstream https://github.com/LawnchairLauncher/lawnicons.git
           git fetch upstream develop
           git checkout personal
+          git pull
           git merge upstream/develop --no-edit
           git push origin personal
   version-bump:
