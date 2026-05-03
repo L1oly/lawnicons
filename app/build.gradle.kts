@@ -20,7 +20,7 @@ val isReleaseBuild = ciBuild && ciRef.contains("main")
 val devReleaseName = if (ciBuild) "(Dev #$ciRunNumber)" else "($buildCommit)"
 
 val version = "2.17.1"
-val versionDisplayName = version + if (!isReleaseBuild) " $devReleaseName" else ""
+val versionDisplayName = version + L1oly //+ if (!isReleaseBuild) " $devReleaseName" else ""
 
 android {
     compileSdk = 36
