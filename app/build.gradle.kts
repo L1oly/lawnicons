@@ -1,5 +1,6 @@
 import app.cash.licensee.SpdxId
 import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
@@ -53,7 +54,7 @@ android {
 
     buildTypes {
         all {
-            signingConfig = releaseSigning
+            signingConfig = signingConfigs.getByName("release")
             isPseudoLocalesEnabled = true
         }
         release {
@@ -161,30 +162,14 @@ dependencies {
 tasks.preBuild {
     dependsOn(project(projects.svgProcessor.path).tasks.named("run"))
 }
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
 }
 
 android {
-    signingConfigs {
-        release {
-            if (keystoreProperties.containsKey('storeFile')) {
-                storeFile = file(keystoreProperties['storeFile'])
-                storePassword = keystoreProperties['storePassword']
-                keyAlias = keystoreProperties['keyAlias']
-                keyPassword = keystoreProperties['keyPassword']
-            }
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release // Це прив'язує підпис до релізу
-        }
-        debug {
-            signingConfig signingConfigs.release 
-        }
-    }
+   
 }
 
