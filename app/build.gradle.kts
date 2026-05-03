@@ -2,6 +2,12 @@ import app.cash.licensee.SpdxId
 import java.util.Properties
 import java.io.FileInputStream
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -162,14 +168,5 @@ dependencies {
 tasks.preBuild {
     dependsOn(project(projects.svgProcessor.path).tasks.named("run"))
 }
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-}
-}
 
-android {
-   
-}
 
