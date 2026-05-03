@@ -20,7 +20,7 @@ val isReleaseBuild = ciBuild && ciRef.contains("main")
 val devReleaseName = if (ciBuild) "(Dev #$ciRunNumber)" else "($buildCommit)"
 
 val version = "2.17.1.5"
-val versionDisplayName = "${version}L1oly" //version + if (!isReleaseBuild) " $devReleaseName" else ""
+val versionDisplayName = "${version} L1oly" //version + if (!isReleaseBuild) " $devReleaseName" else ""
 android {
     compileSdk = 36
     namespace = "app.lawnchair.lawnicons"
