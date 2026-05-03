@@ -30,28 +30,30 @@ jobs:
           git push origin personal
   version-bump:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
       - name: Bump Version
         run: |
-          VERSION=$(cat app/build.gradle.kts)
-          IFS='.' read -ra ADDR <<< "$VERSION"
-          if [ ${#ADDR[@]} -lt 4 ]; then
-            NEW_VERSION="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
-          else
-            ADDR[3]=$((ADDR[3] + 1))
-            NEW_VERSION="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.${ADDR[3]}"
-          fi
-          echo "Нова версія: $NEW_VERSION"
-          echo $NEW_VERSION > app/build.gradle.kts
-
+         FILE="app/build.gradle.kts"
+         CURRENT_VERSION=$(grep 'val version =' $FILE | sed -E 's/.*"([^"]+)".*/\1/')
+         IFS='.' read -ra PARTS <<< "$CURRENT_VERSION"
+         if [ ${#PARTS[@]} -lt 4 ]; then
+           NEW_VERSION="${CURRENT_VERSION}.1"
+         else
+           LAST_INDEX=$((${#PARTS[@]} - 1))
+           PARTS[$LAST_INDEX]=$((PARTS[$LAST_INDEX] + 1))
+           NEW_VERSION=$(IFS=.; echo "${PARTS[*]}")
+         fi
+         sed -i "s|val version = \"$CURRENT_VERSION\"|val version = \"$NEW_VERSION\"|" $FILE
       - name: Commit changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add app/build.gradle.kts
-          git commit -m "Bump version to $(cat app/build.gradle.kts) [skip ci]"
+          git commit -m "chore: bump version to $(grep 'versionName =' app/build.gradle.kts | cut -d '\"' -f 2) [skip ci]"
           git push
   check-paths:
     runs-on: ubuntu-latest
