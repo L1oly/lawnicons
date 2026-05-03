@@ -28,6 +28,31 @@ jobs:
           git checkout personal
           git merge upstream/develop --no-edit
           git push origin personal
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Bump Version
+        run: |
+          VERSION=$(cat app/build.gradle.kts)
+          IFS='.' read -ra ADDR <<< "$VERSION"
+          if [ ${#ADDR[@]} -lt 4 ]; then
+            NEW_VERSION="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
+          else
+            ADDR[3]=$((ADDR[3] + 1))
+            NEW_VERSION="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.${ADDR[3]}"
+          fi
+          echo "Нова версія: $NEW_VERSION"
+          echo $NEW_VERSION > app/build.gradle.kts
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add VERSION.txt
+          git commit -m "Bump version to $(cat VERSION.txt) [skip ci]"
+          git push
   check-paths:
     runs-on: ubuntu-latest
     outputs:
