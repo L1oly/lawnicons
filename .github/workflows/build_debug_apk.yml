@@ -50,8 +50,8 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add VERSION.txt
-          git commit -m "Bump version to $(cat VERSION.txt) [skip ci]"
+          git add app/build.gradle.kts
+          git commit -m "Bump version to $(cat app/build.gradle.kts) [skip ci]"
           git push
   check-paths:
     runs-on: ubuntu-latest
