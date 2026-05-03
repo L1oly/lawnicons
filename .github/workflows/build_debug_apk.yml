@@ -125,7 +125,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: Debug APK
-          path: artifacts/debug-apk
+          path: artifacts/release-apk
       - name: Export APK_NAME for later use
         run: echo "APK_NAME=Lawnicons.Nightly.$(echo ${{ github.sha }} | cut -c1-7).apk" >> $GITHUB_ENV
       - name: Rename .apk file
