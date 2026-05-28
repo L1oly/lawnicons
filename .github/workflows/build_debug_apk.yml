@@ -4,10 +4,60 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - develop
+      - personal
+  schedule:
+    - cron: '0 0 * * 0'
   pull_request:
-
 jobs:
+  sync-and-update:
+    needs: check-paths
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: personal
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sync with Upstream
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          git remote add upstream https://github.com/LawnchairLauncher/lawnicons.git
+          git fetch upstream develop
+          git checkout personal
+          git pull
+          git merge upstream/develop --no-edit
+          git push origin personal
+  version-bump:
+    needs:  nightly-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Bump Version
+        run: |
+         FILE="app/build.gradle.kts"
+         CURRENT_VERSION=$(grep 'val version =' $FILE | sed -E 's/.*"([^"]+)".*/\1/')
+         IFS='.' read -ra PARTS <<< "$CURRENT_VERSION"
+         if [ ${#PARTS[@]} -lt 4 ]; then
+           NEW_VERSION="${CURRENT_VERSION}.1"
+         else
+           LAST_INDEX=$((${#PARTS[@]} - 1))
+           PARTS[$LAST_INDEX]=$((PARTS[$LAST_INDEX] + 1))
+           NEW_VERSION=$(IFS=.; echo "${PARTS[*]}")
+         fi
+         sed -i "s|val version = \"$CURRENT_VERSION\"|val version = \"$NEW_VERSION\"|" $FILE
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add app/build.gradle.kts
+          git commit -m "chore: bump version to $(grep 'versionName =' app/build.gradle.kts | cut -d '\"' -f 2) [skip ci]"
+          git push
   check-paths:
     runs-on: ubuntu-latest
     outputs:
@@ -32,11 +82,10 @@ jobs:
               - 'gradlew.bat'
               - 'svg-processor/**'
               - 'svgs/**'
-
+              
   build-debug-apk:
     runs-on: ubuntu-latest
-    needs: check-paths
-    if: needs.check-paths.outputs.skip_steps != 'true'
+    needs: sync-and-update
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
@@ -50,7 +99,6 @@ jobs:
         with:
           cache-encryption-key: Da25KUVSE5jbGds2zXmfXw==
       - name: Write sign info
-        if: github.event.repository.fork == false
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             echo storePassword='${{ secrets.KEYSTORE_PASSWORD }}' >> keystore.properties
@@ -60,112 +108,32 @@ jobs:
             echo ${{ secrets.KEYSTORE }} | base64 --decode > ${{ github.workspace }}/key.jks
           fi
       - name: Build debug APK
-        run: ./gradlew app:assembleDebug
+        run: ./gradlew clean app:assembleRelease
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Debug APK
-          path: app/build/outputs/apk/app/debug/*.apk
-
-  run-unit-tests:
-    runs-on: ubuntu-latest
-    needs: check-paths
-    if: needs.check-paths.outputs.skip_steps != 'true'
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: true
-      - uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v6
-        with:
-          cache-encryption-key: Da25KUVSE5jbGds2zXmfXw==
-      - name: Run unit tests
-        run: ./gradlew app:testDebugUnitTest
-
-  check-style:
-    runs-on: ubuntu-latest
-    needs: check-paths
-    if: needs.check-paths.outputs.skip_steps != 'true'
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: true
-      - uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v6
-      - run: ./gradlew spotlessCheck
-
-  send-notifications:
-    runs-on: ubuntu-latest
-    needs: [ build-debug-apk, run-unit-tests, check-style, check-paths ]
-    if: always() && needs.check-paths.result == 'success'
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: true
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.x'
-      - name: Install Python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install gitpython requests
-      - name: Download artifact
-        if: needs.build-debug-apk.result == 'success'
-        uses: actions/download-artifact@v8
-        with:
-          name: Debug APK
-          path: artifacts/debug-apk
-      - name: Send notifications
-        run: python send_notifications.py
-        env:
-          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
-          TELEGRAM_CI_BOT_TOKEN: ${{ secrets.TELEGRAM_CI_BOT_TOKEN }}
-          TELEGRAM_CI_CHANNEL_ID: ${{ secrets.TELEGRAM_CI_CHANNEL_ID }}
-          ARTIFACT_DIRECTORY: artifacts/debug-apk
-          GITHUB_REF: ${{ github.ref }}
-          DISCORD_CI_BOT_TOKEN: ${{ secrets.DISCORD_CI_BOT_TOKEN }}
-
+          name: Release APK
+          path: app/build/outputs/apk/app/release/*.apk
   nightly-release:
     runs-on: ubuntu-latest
-    if: github.event.repository.fork == false && github.event_name == 'push' && needs.check-paths.outputs.skip_steps != 'true'
+    #if: github.event_name == 'push' && needs.check-paths.outputs.skip_steps != 'true'
     needs: [ build-debug-apk, check-paths ]
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - uses: actions/download-artifact@v8
         with:
-          name: Debug APK
-          path: artifacts/debug-apk
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.x'
-      - name: Export APK_NAME
+          name: Release APK
+          path: artifacts/release-apk
+      - name: Export APK_NAME for later use
         run: echo "APK_NAME=Lawnicons.Nightly.$(echo ${{ github.sha }} | cut -c1-7).apk" >> $GITHUB_ENV
       - name: Rename .apk file
-        run: mv artifacts/debug-apk/*.apk $APK_NAME
-      - name: Generate release notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-        run: python .github/scripts/nightly_notes.py > release_notes.md
+        run: |
+          mv artifacts/release-apk/*.apk $APK_NAME
       - name: Delete release if exist then create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release view "nightly" && gh release delete "nightly" -y --cleanup-tag
-          gh release create "nightly" "$APK_NAME" \
-            -p \
-            -t "Lawnicons Nightly" \
-            --notes-file release_notes.md
+          gh release create "nightly" "$APK_NAME" -p -t "Lawnicons Nightly" --generate-notes
