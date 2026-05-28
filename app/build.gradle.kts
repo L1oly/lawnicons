@@ -1,5 +1,12 @@
 import app.cash.licensee.SpdxId
 import java.util.Properties
+import java.io.FileInputStream
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -19,8 +26,8 @@ val ciRunNumber = providers.environmentVariable("GITHUB_RUN_NUMBER").orNull.orEm
 val isReleaseBuild = ciBuild && ciRef.contains("main")
 val devReleaseName = if (ciBuild) "(Dev #$ciRunNumber)" else "($buildCommit)"
 
-val version = "2.17.1"
-val versionDisplayName = version + if (!isReleaseBuild) " $devReleaseName" else ""
+val version = "2.17.1.13"
+val versionDisplayName = "${version} L1oly" //version + if (!isReleaseBuild) " $devReleaseName" else ""
 
 android {
     compileSdk = 37
@@ -54,7 +61,7 @@ android {
 
     buildTypes {
         all {
-            signingConfig = releaseSigning
+            signingConfig = signingConfigs.getByName("release")
             isPseudoLocalesEnabled = true
         }
         release {
