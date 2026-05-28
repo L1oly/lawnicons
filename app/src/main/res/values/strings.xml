@@ -38,6 +38,7 @@
     <string name="icon_request_dashboard">Icon request dashboard</string>
     <!-- Label for the icon request action in the toolbar -->
     <string name="request_icons">Request icons</string>
+    <string name="request_icons_button">Request icons</string>
 
 
     <!-- Snackbar content -->
