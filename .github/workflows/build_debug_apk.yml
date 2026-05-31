@@ -55,6 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git pull
           git add app/build.gradle.kts
           git commit -m "chore: bump version to $(grep 'versionName =' app/build.gradle.kts | cut -d '\"' -f 2) [skip ci]"
           git push
