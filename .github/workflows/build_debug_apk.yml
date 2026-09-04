@@ -23,12 +23,12 @@ jobs:
       - name: Sync with Upstream
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/LawnchairLauncher/lawnicons.git
           git fetch upstream develop
           git checkout personal
-          git pull
-          git merge upstream/develop --no-edit
+          git pull origin personal
+          git merge upstream/develop -X ours --no-edit
           git push origin personal
   version-bump:
     needs:  nightly-release
