@@ -20,7 +20,7 @@ val ciRunNumber = providers.environmentVariable("GITHUB_RUN_NUMBER").orNull.orEm
 val isReleaseBuild = ciBuild && ciRef.contains("main")
 val devReleaseName = if (ciBuild) "(Dev #$ciRunNumber)" else "($buildCommit)"
 
-val version = "2.18.0.8"
+val version = "2.18.0.9"
 val versionDisplayName = "${version}-git L1oly mod"//+ if (!isReleaseBuild) " $devReleaseName" else ""
 
 android {
