@@ -31,7 +31,7 @@ android {
         applicationId = "app.lawnchair.lawnicons"
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = 26
+        versionCode = 27
         versionName = versionDisplayName
         vectorDrawables.useSupportLibrary = true
         buildConfigField("String", "COMMIT_HASH", "\"${buildCommit}\"")
